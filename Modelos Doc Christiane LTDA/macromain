@@ -36,8 +36,13 @@ Sub SalvarAtendimento()
         .Cells(linhaNova, 19).Value = wsForm.Range("J32").Value
         .Cells(linhaNova, 20).Value = wsForm.Range("B35").Value
         .Cells(linhaNova, 21).Value = wsForm.Range("D60").Value
-        .Cells(linhaNova, 22).Value = wsForm.Range("B15").Value
-    End With
+        .Cells(linhaNova, 22).Value = wsForm.Range("B76").Value
+        .Cells(linhaNova, 23).Value = wsForm.Range("F76").Value
+        .Cells(linhaNova, 24).Value = wsForm.Range("I76").Value
+        .Cells(linhaNova, 25).Value = wsForm.Range("L76").Value
+        .Cells(linhaNova, 26).Value = wsForm.Range("L76").Value
+        .Cells(linhaNova, 27).Value = wsForm.Range("B15").Value
+            End With
     
     ' Mostrar o ID gerado no formulário
     wsForm.Range("N9").Value = proximoID
@@ -92,7 +97,12 @@ Sub CarregarRegistro(linha As Long)
     wsForm.Range("J32").Value = wsBD.Cells(linha, 19).Value
     wsForm.Range("B35").Value = wsBD.Cells(linha, 20).Value
     wsForm.Range("D60").Value = wsBD.Cells(linha, 21).Value
-    wsForm.Range("B15").Value = wsBD.Cells(linha, 22).Value
+    wsForm.Range("B76").Value = wsBD.Cells(linha, 22).Value
+    wsForm.Range("F76").Value = wsBD.Cells(linha, 23).Value
+    wsForm.Range("I76").Value = wsBD.Cells(linha, 24).Value
+    wsForm.Range("L76").Value = wsBD.Cells(linha, 25).Value
+    wsForm.Range("B79").Value = wsBD.Cells(linha, 26).Value
+    wsForm.Range("B15").Value = wsBD.Cells(linha, 27).Value
     
     wsForm.Range("N9").Value = wsBD.Cells(linha, 1).Value
 End Sub
@@ -197,11 +207,25 @@ Sub NovoRegistro()
         Set mergedRange = .Range("B15").MergeArea
         mergedRange.ClearContents
         
+        Set mergedRange = .Range("B76").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("F76").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("I76").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("L76").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B79").MergeArea
+        mergedRange.ClearContents
         ' Preenche o próximo ID para referência visual
         .Range("N9").Value = proximoID
     End With
 
-    MsgBox "Novo registro iniciado. Preencha os campos e clique em Salvar.", vbInformation
+    
 End Sub
 
 
@@ -241,8 +265,48 @@ Sub AtualizarAtendimento()
         .Cells(linhaAtual, 19).Value = wsForm.Range("J32").Value
         .Cells(linhaAtual, 20).Value = wsForm.Range("B35").Value
         .Cells(linhaAtual, 21).Value = wsForm.Range("D60").Value
-        .Cells(linhaAtual, 22).Value = wsForm.Range("B15").Value
+        .Cells(linhaAtual, 22).Value = wsForm.Range("B76").Value
+        .Cells(linhaAtual, 23).Value = wsForm.Range("F76").Value
+        .Cells(linhaAtual, 24).Value = wsForm.Range("I76").Value
+        .Cells(linhaAtual, 25).Value = wsForm.Range("L76").Value
+        .Cells(linhaAtual, 26).Value = wsForm.Range("B79").Value
+        .Cells(linhaAtual, 27).Value = wsForm.Range("B15").Value
     End With
     
     MsgBox "Registro atualizado com sucesso!", vbInformation
+End Sub
+
+Sub BuscarPorID()
+    Dim wsForm As Worksheet, wsBD As Worksheet
+    Dim idBusca As String
+    Dim ultimaLinha As Long
+    Dim i As Long
+
+    Set wsForm = ThisWorkbook.Sheets("Welcome")
+    Set wsBD = ThisWorkbook.Sheets("bancodedados")
+
+    idBusca = Trim(wsForm.Range("P14").Value)
+
+    If idBusca = "" Then
+        MsgBox "Por favor, digite um número de ID para buscar.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Garante que o valor tenha o formato ID + 3 dígitos (ex: ID004)
+    If Not LCase(Left(idBusca, 2)) = "id" Then
+        idBusca = "ID" & Format(idBusca, "000")
+    End If
+
+    ultimaLinha = wsBD.Cells(wsBD.Rows.Count, 1).End(xlUp).Row
+
+    For i = 2 To ultimaLinha
+        If wsBD.Cells(i, 1).Value = idBusca Then
+            indiceAtual = i
+            CarregarRegistro i
+            MsgBox "Registro " & idBusca & " encontrado e carregado com sucesso!", vbInformation
+            Exit Sub
+        End If
+    Next i
+
+    MsgBox "ID " & idBusca & " não encontrado no banco de dados.", vbExclamation
 End Sub

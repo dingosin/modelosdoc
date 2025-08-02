@@ -1,0 +1,248 @@
+Public indiceAtual As Long
+
+Sub SalvarAtendimento()
+    Dim wsForm As Worksheet, wsBD As Worksheet
+    Dim linhaNova As Long, proximoID As String
+
+    Set wsForm = ThisWorkbook.Sheets("Welcome")
+    Set wsBD = ThisWorkbook.Sheets("bancodedados")
+    
+    ' Encontra a próxima linha vazia na Planilha1
+    linhaNova = wsBD.Cells(wsBD.Rows.Count, 1).End(xlUp).Row + 1
+    
+    ' Gera o próximo ID
+    proximoID = "ID" & Format(linhaNova - 1, "000")
+    
+    ' Preencher os dados na aba Planilha1
+    With wsBD
+        .Cells(linhaNova, 1).Value = proximoID                              ' Coluna A: ID
+        .Cells(linhaNova, 2).Value = wsForm.Range("B12").Value              ' Coluna B: Nome do Paciente
+        .Cells(linhaNova, 3).Value = wsForm.Range("K12").Value              ' Coluna D: Data de nascimento
+        .Cells(linhaNova, 4).Value = wsForm.Range("G15").Value              ' Coluna K: Estado Civil
+        .Cells(linhaNova, 5).Value = wsForm.Range("K15").Value
+        .Cells(linhaNova, 6).Value = wsForm.Range("B19").Value
+        .Cells(linhaNova, 7).Value = wsForm.Range("K19").Value
+        .Cells(linhaNova, 8).Value = wsForm.Range("B22").Value
+        .Cells(linhaNova, 9).Value = wsForm.Range("B24").Value
+        .Cells(linhaNova, 10).Value = wsForm.Range("B26").Value
+        .Cells(linhaNova, 11).Value = wsForm.Range("F26").Value
+        .Cells(linhaNova, 12).Value = wsForm.Range("J26").Value
+        .Cells(linhaNova, 13).Value = wsForm.Range("B28").Value
+        .Cells(linhaNova, 14).Value = wsForm.Range("B30").Value
+        .Cells(linhaNova, 15).Value = wsForm.Range("G30").Value
+        .Cells(linhaNova, 16).Value = wsForm.Range("K30").Value
+        .Cells(linhaNova, 17).Value = wsForm.Range("B32").Value
+        .Cells(linhaNova, 18).Value = wsForm.Range("F32").Value
+        .Cells(linhaNova, 19).Value = wsForm.Range("J32").Value
+        .Cells(linhaNova, 20).Value = wsForm.Range("B35").Value
+        .Cells(linhaNova, 21).Value = wsForm.Range("D60").Value
+        .Cells(linhaNova, 22).Value = wsForm.Range("B15").Value
+    End With
+    
+    ' Mostrar o ID gerado no formulário
+    wsForm.Range("N9").Value = proximoID
+    
+    MsgBox "Atendimento salvo com sucesso!", vbInformation
+End Sub
+
+
+
+Sub InicializarVisualizacao()
+    Dim wsBD As Worksheet
+    Set wsBD = ThisWorkbook.Sheets("bancodedados")
+
+    ' Começa a partir da primeira linha de dados (linha 2)
+    If wsBD.Cells(2, 1).Value = "" Then
+        MsgBox "Nenhum registro salvo ainda.", vbExclamation
+        Exit Sub
+    End If
+    
+    indiceAtual = 2
+    CarregarRegistro indiceAtual
+End Sub
+
+Sub CarregarRegistro(linha As Long)
+    Dim wsForm As Worksheet, wsBD As Worksheet
+    Set wsForm = ThisWorkbook.Sheets("Welcome")
+    Set wsBD = ThisWorkbook.Sheets("bancodedados")
+
+    If wsBD.Cells(linha, 1).Value = "" Then
+        MsgBox "Registro não encontrado.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Preencher os campos
+    wsForm.Range("B12").Value = wsBD.Cells(linha, 2).Value              ' Coluna B: Nome do Paciente
+    wsForm.Range("K12").Value = wsBD.Cells(linha, 3).Value              ' Coluna D: Data de nascimento
+    wsForm.Range("G15").Value = wsBD.Cells(linha, 4).Value              ' Coluna K: Estado Civil
+    wsForm.Range("K15").Value = wsBD.Cells(linha, 5).Value
+    wsForm.Range("B19").Value = wsBD.Cells(linha, 6).Value
+    wsForm.Range("K19").Value = wsBD.Cells(linha, 7).Value
+    wsForm.Range("B22").Value = wsBD.Cells(linha, 8).Value
+    wsForm.Range("B24").Value = wsBD.Cells(linha, 9).Value
+    wsForm.Range("B26").Value = wsBD.Cells(linha, 10).Value
+    wsForm.Range("F26").Value = wsBD.Cells(linha, 11).Value
+    wsForm.Range("J26").Value = wsBD.Cells(linha, 12).Value
+    wsForm.Range("B28").Value = wsBD.Cells(linha, 13).Value
+    wsForm.Range("B30").Value = wsBD.Cells(linha, 14).Value
+    wsForm.Range("G30").Value = wsBD.Cells(linha, 15).Value
+    wsForm.Range("K30").Value = wsBD.Cells(linha, 16).Value
+    wsForm.Range("B32").Value = wsBD.Cells(linha, 17).Value
+    wsForm.Range("F32").Value = wsBD.Cells(linha, 18).Value
+    wsForm.Range("J32").Value = wsBD.Cells(linha, 19).Value
+    wsForm.Range("B35").Value = wsBD.Cells(linha, 20).Value
+    wsForm.Range("D60").Value = wsBD.Cells(linha, 21).Value
+    wsForm.Range("B15").Value = wsBD.Cells(linha, 22).Value
+    
+    wsForm.Range("N9").Value = wsBD.Cells(linha, 1).Value
+End Sub
+
+Sub ProximoRegistro()
+    Dim wsBD As Worksheet
+    Set wsBD = ThisWorkbook.Sheets("bancodedados")
+    
+    If wsBD.Cells(indiceAtual + 1, 1).Value <> "" Then
+        indiceAtual = indiceAtual + 1
+        CarregarRegistro indiceAtual
+    Else
+        MsgBox "Este é o último registro.", vbInformation
+    End If
+End Sub
+
+Sub RegistroAnterior()
+    If indiceAtual > 2 Then
+        indiceAtual = indiceAtual - 1
+        CarregarRegistro indiceAtual
+    Else
+        MsgBox "Este é o primeiro registro.", vbInformation
+    End If
+End Sub
+
+
+Sub NovoRegistro()
+    Dim wsForm As Worksheet, wsBD As Worksheet
+    Dim linhaNova As Long, proximoID As String
+    Dim mergedRange As Range
+
+    Set wsForm = ThisWorkbook.Sheets("Welcome")
+    Set wsBD = ThisWorkbook.Sheets("bancodedados")
+
+    ' Encontra a próxima linha vazia
+    linhaNova = wsBD.Cells(wsBD.Rows.Count, 1).End(xlUp).Row + 1
+    proximoID = "ID" & Format(linhaNova - 1, "000")
+    
+    ' Limpa os campos do formulário, tratando células mescladas
+    With wsForm
+        ' Para cada célula mesclada, limpa todo o intervalo mesclado
+        Set mergedRange = .Range("B12").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("K12").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("G15").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("K15").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B19").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("K19").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B22").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B24").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B26").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("F26").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("J26").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B28").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B30").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("G30").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("K30").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B32").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("F32").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("J32").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B35").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("D60").MergeArea
+        mergedRange.ClearContents
+        
+        Set mergedRange = .Range("B15").MergeArea
+        mergedRange.ClearContents
+        
+        ' Preenche o próximo ID para referência visual
+        .Range("N9").Value = proximoID
+    End With
+
+    MsgBox "Novo registro iniciado. Preencha os campos e clique em Salvar.", vbInformation
+End Sub
+
+
+Sub AtualizarAtendimento()
+    Dim wsForm As Worksheet, wsBD As Worksheet
+    Dim linhaAtual As Long
+
+    Set wsForm = ThisWorkbook.Sheets("Welcome")
+    Set wsBD = ThisWorkbook.Sheets("bancodedados")
+    
+    linhaAtual = indiceAtual ' Linha sendo visualizada
+
+    If linhaAtual < 2 Or wsBD.Cells(linhaAtual, 1).Value = "" Then
+        MsgBox "Nenhum registro válido selecionado para atualizar.", vbExclamation
+        Exit Sub
+    End If
+
+    With wsBD
+        ' NÃO altere a Coluna A (ID)
+        .Cells(linhaAtual, 2).Value = wsForm.Range("B12").Value
+        .Cells(linhaAtual, 3).Value = wsForm.Range("K12").Value
+        .Cells(linhaAtual, 4).Value = wsForm.Range("G15").Value
+        .Cells(linhaAtual, 5).Value = wsForm.Range("K15").Value
+        .Cells(linhaAtual, 6).Value = wsForm.Range("B19").Value
+        .Cells(linhaAtual, 7).Value = wsForm.Range("K19").Value
+        .Cells(linhaAtual, 8).Value = wsForm.Range("B22").Value
+        .Cells(linhaAtual, 9).Value = wsForm.Range("B24").Value
+        .Cells(linhaAtual, 10).Value = wsForm.Range("B26").Value
+        .Cells(linhaAtual, 11).Value = wsForm.Range("F26").Value
+        .Cells(linhaAtual, 12).Value = wsForm.Range("J26").Value
+        .Cells(linhaAtual, 13).Value = wsForm.Range("B28").Value
+        .Cells(linhaAtual, 14).Value = wsForm.Range("B30").Value
+        .Cells(linhaAtual, 15).Value = wsForm.Range("G30").Value
+        .Cells(linhaAtual, 16).Value = wsForm.Range("K30").Value
+        .Cells(linhaAtual, 17).Value = wsForm.Range("B32").Value
+        .Cells(linhaAtual, 18).Value = wsForm.Range("F32").Value
+        .Cells(linhaAtual, 19).Value = wsForm.Range("J32").Value
+        .Cells(linhaAtual, 20).Value = wsForm.Range("B35").Value
+        .Cells(linhaAtual, 21).Value = wsForm.Range("D60").Value
+        .Cells(linhaAtual, 22).Value = wsForm.Range("B15").Value
+    End With
+    
+    MsgBox "Registro atualizado com sucesso!", vbInformation
+End Sub

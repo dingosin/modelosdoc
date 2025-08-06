@@ -278,35 +278,49 @@ End Sub
 
 Sub BuscarPorID()
     Dim wsForm As Worksheet, wsBD As Worksheet
-    Dim idBusca As String
+    Dim busca As String
     Dim ultimaLinha As Long
     Dim i As Long
-
+    Dim encontrado As Boolean
+    
     Set wsForm = ThisWorkbook.Sheets("Welcome")
     Set wsBD = ThisWorkbook.Sheets("bancodedados")
 
-    idBusca = Trim(wsForm.Range("P14").Value)
+    busca = Trim(wsForm.Range("P14").Value)
 
-    If idBusca = "" Then
-        MsgBox "Por favor, digite um número de ID para buscar.", vbExclamation
+    If busca = "" Then
+        MsgBox "Por favor, digite um ID ou nome do paciente para buscar.", vbExclamation
         Exit Sub
     End If
 
-    ' Garante que o valor tenha o formato ID + 3 dígitos (ex: ID004)
-    If Not LCase(Left(idBusca, 2)) = "id" Then
-        idBusca = "ID" & Format(idBusca, "000")
-    End If
-
     ultimaLinha = wsBD.Cells(wsBD.Rows.Count, 1).End(xlUp).Row
+    encontrado = False
 
+    ' Primeira tentativa: buscar por ID (exato)
     For i = 2 To ultimaLinha
-        If wsBD.Cells(i, 1).Value = idBusca Then
+        If StrComp(wsBD.Cells(i, 1).Value, busca, vbTextCompare) = 0 Then
             indiceAtual = i
             CarregarRegistro i
-            MsgBox "Registro " & idBusca & " encontrado e carregado com sucesso!", vbInformation
+            wsForm.Range("N9").Value = wsBD.Cells(i, 1).Value
+            MsgBox "Registro " & wsBD.Cells(i, 1).Value & " encontrado e carregado com sucesso!", vbInformation
+            encontrado = True
             Exit Sub
         End If
     Next i
 
-    MsgBox "ID " & idBusca & " não encontrado no banco de dados.", vbExclamation
+    ' Segunda tentativa: buscar por nome (contém texto)
+    For i = 2 To ultimaLinha
+        If InStr(1, wsBD.Cells(i, 2).Value, busca, vbTextCompare) > 0 Then
+            indiceAtual = i
+            CarregarRegistro i
+            wsForm.Range("N9").Value = wsBD.Cells(i, 1).Value
+            MsgBox "Registro do paciente '" & wsBD.Cells(i, 2).Value & "' encontrado e carregado com sucesso!", vbInformation
+            encontrado = True
+            Exit Sub
+        End If
+    Next i
+
+    If Not encontrado Then
+        MsgBox "Nenhum registro encontrado com o valor '" & busca & "'.", vbExclamation
+    End If
 End Sub
